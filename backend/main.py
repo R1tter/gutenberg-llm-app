@@ -1,5 +1,4 @@
-from fastapi import FastAPI
-from fastapi import HTTPException
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List, Dict
 from pydantic import BaseModel
@@ -7,49 +6,45 @@ from pydantic import BaseModel
 app = FastAPI()
 
 app.add_middleware(
-  CORSMiddleware,
-  allow_origins=["*"],
-  allow_credentials=True,
-  allow_methods=["*"],
-  allow_headers=["*"],
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
-class AnalyzeRequest(BaseModel):
-    content: str
-
-# Mock book database
+class Book(BaseModel):
+    id: int
+    title: str
+    author: str
 
 books = [
-  {"id": 1, "title": "Pride and Prejudice", "author": "Jane Austen"},
-  {"id": 2, "title": "Moby Dick", "author": "Herman Melville"},
-  {"id": 3, "title": "The Adventures of Sherlock Holmes", "author": "Arthur Conan Doyle"},
+    {"id": 1, "title": "Pride and Prejudice", "author": "Jane Austen"},
+    {"id": 2, "title": "Moby Dick", "author": "Herman Melville"},
+    {"id": 3, "title": "The Adventures of Sherlock Holmes", "author": "Arthur Conan Doyle"},
 ]
 
-@app.get("/books", response_model=List[dict])
+@app.get("/books", response_model=List[Book])
 async def get_books():
-  return books
+    return books
 
-@app.get("/books/{book_id}", response_model=dict)
+@app.get("/books/{book_id}", response_model=Book)
 async def get_book_details(book_id: int):
     for book in books:
         if book["id"] == book_id:
-            # Add a fictional book content
-            return {
-                "id": book["id"],
-                "title": book["title"],
-                "author": book["author"],
-                "content": "This is a sample excerpt of the book content...",
-            }
+            return book
     raise HTTPException(status_code=404, detail="Book not found")
+
+# Defina um modelo para validar o body da requisição
+class AnalyzeRequest(BaseModel):
+    book_id: int
+    content: str
 
 @app.post("/analyze", response_model=Dict[str, str])
 async def analyze_text(request: AnalyzeRequest):
-    # Simulation of analysis using a Mock (TODO: implement this with real integration)
+    # Extraia o conteúdo do body da requisição
+    book_id = request.book_id
     content = request.content
     word_count = len(content.split())
-    summary = "this is a mock summary of the content provided"
-    return {
-        "summary": summary,
-        "word_count": f"The content has {word_count} words",
-        "themes": "Mock themes: Adventure, Mystery, Drama",
-    }
+    summary = f"This is a summary for book {book_id}"
+    return {"summary": summary, "word_count": str(word_count)}
