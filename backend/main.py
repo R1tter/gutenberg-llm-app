@@ -1,7 +1,8 @@
 from fastapi import FastAPI
 from fastapi import HTTPException
-from typing import List
 from fastapi.middleware.cors import CORSMiddleware
+from typing import List, Dict
+from pydantic import BaseModel
 
 app = FastAPI()
 
@@ -12,6 +13,10 @@ app.add_middleware(
   allow_methods=["*"],
   allow_headers=["*"],
 )
+
+class AnalyzeRequest(BaseModel):
+    content: str
+
 # Mock book database
 
 books = [
@@ -36,3 +41,15 @@ async def get_book_details(book_id: int):
                 "content": "This is a sample excerpt of the book content...",
             }
     raise HTTPException(status_code=404, detail="Book not found")
+
+@app.post("/analyze", response_model=Dict[str, str])
+async def analyze_text(request: AnalyzeRequest):
+    # Simulation of analysis using a Mock (TODO: implement this with real integration)
+    content = request.content
+    word_count = len(content.split())
+    summary = "this is a mock summary of the content provided"
+    return {
+        "summary": summary,
+        "word_count": f"The content has {word_count} words",
+        "themes": "Mock themes: Adventure, Mystery, Drama",
+    }
