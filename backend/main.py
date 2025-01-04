@@ -32,7 +32,7 @@ async def get_books():
 async def get_book_details(book_id: int):
     for book in books:
         if book["id"] == book_id:
-            return book
+            return {**book, "content": "This is the content of the book."}
     raise HTTPException(status_code=404, detail="Book not found")
 
 # Defina um modelo para validar o body da requisição
