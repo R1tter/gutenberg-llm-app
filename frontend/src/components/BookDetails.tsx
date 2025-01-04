@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import AnalysisResult from "./AnalysisResult";
 
 interface BookDetails {
   id: number;
@@ -38,6 +39,7 @@ export default function BookDetails() {
       <h1 className="text-2xl font-bold">{book.title}</h1>
       <h2 className="text-lg text-gray-600">by {book.author}</h2>
       <p className="mt-4">{book.content}</p>
+      <AnalysisResult content={book.content} />
     </div>
   );
 }
