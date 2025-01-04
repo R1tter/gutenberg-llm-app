@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 interface AnalysisResultProps {
+  book_id: number;
   content: string;
 }
 
@@ -10,16 +11,16 @@ interface AnalysisResponse {
   themes: string;
 }
 
-export default function AnalysisResult({ content }: AnalysisResultProps) {
+export default function AnalysisResult({ book_id, content }: AnalysisResultProps) {
   const [result, setResult] = useState<AnalysisResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const analyzeText = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8080/analyze", {
+      const response = await fetch("http://127.0.0.1:8000/analyze", {
         method: "POST",
         headers: {  "Content-Type": "application/json" },
-        body: JSON.stringify({ content }),
+        body: JSON.stringify({ book_id, content }),
       });
 
       if (!response.ok) {

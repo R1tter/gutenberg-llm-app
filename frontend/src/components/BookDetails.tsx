@@ -39,7 +39,7 @@ export default function BookDetails() {
       <h1 className="text-2xl font-bold">{book.title}</h1>
       <h2 className="text-lg text-gray-600">by {book.author}</h2>
       <p className="mt-4">{book.content}</p>
-      <AnalysisResult content={book.content} />
-    </div>
+      <AnalysisResult book_id={book.id} content={book.content || "No content available"} />
+      </div>
   );
 }
