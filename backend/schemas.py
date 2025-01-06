@@ -12,4 +12,9 @@ class BookCreate(BookBase):
     content: str
 
 class BookResponse(BookBase):
-    pass
+    id: int
+    title: str
+    author: str | None = None
+
+    class Config:
+        orm_mode = True

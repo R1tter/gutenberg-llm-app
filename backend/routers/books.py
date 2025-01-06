@@ -1,13 +1,16 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from typing import List
-
 from db import get_db
 from models import Book
 from schemas import BookResponse
 from services.gutenberg import fetch_book_data
 
 router = APIRouter()
+
+@router.get("/api/books/", response_model=list[BookResponse])
+def get_all_books(db: Session = Depends(get_db)):
+    books = db.query(Book).all()
+    return books
 
 @router.post("/books/{book_id}", response_model=BookResponse)
 def fetch_and_save_book(book_id: int, db: Session = Depends(get_db)):
