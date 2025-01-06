@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from db import Base, engine
+from routers import books, analysis
 
 # Starting database
 Base.metadata.create_all(bind=engine)
@@ -17,6 +18,5 @@ app.add_middleware(
 )
 
 # Routes
-
 app.include_router(books.router, prefix="/api", tags=["books"])
 app.include_router(analysis.router, prefix="/api", tags=["analysis"])

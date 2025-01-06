@@ -5,7 +5,7 @@ from pydantic import BaseModel
 class BookBase(BaseModel):
   id = int
   title: str
-  author: str | None
+  author: str | None = None
 
 class BookCreate(BookBase):
   content: str
