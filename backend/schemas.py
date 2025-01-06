@@ -6,6 +6,7 @@ class BookBase(BaseModel):
     id: int
     title: str
     author: str | None = None
+    content: str
 
 class BookCreate(BookBase):
     content: str
