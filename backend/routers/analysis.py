@@ -7,12 +7,19 @@ from typing import Dict
 
 router = APIRouter()
 
-@router.post("/analyze", response_model=Dict[str, str])
+@router.post("/analyze/{book_id}", response_model=Dict)
 async def analyze_book_text(book_id: int, db: Session = Depends(get_db)) :
   book = db.query(Book).filter(Book.id == book_id).first()
   if not book:
     raise HTTPException(status_code=404, detail="Book not found")
- 
+  
   # Analysis result
-  analysis_result = analyze_text(book.content)
-  return analysis_result
+  characters = identify_characters(book.content)
+  language = detect_language(book.content)
+  summary = summarize_plot(book.content)
+
+  return {
+    "summary": summary,
+    "characters": characters,
+    "language": language,
+  }
