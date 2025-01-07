@@ -15,6 +15,7 @@ class BookResponse(BookBase):
     id: int
     title: str
     author: str | None = None
+    content: str 
 
     class Config:
         orm_mode = True
