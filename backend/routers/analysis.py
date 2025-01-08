@@ -2,44 +2,88 @@ from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from db import get_db
 from models import Book
-from typing import Dict
-import httpx
-import os
+from services.groq import query_groq
+from typing import List
 
 router = APIRouter()
 
-GROQ_API_URL = "https://api.groq.com/analyze" # temporary, verify documentation for the correct URL
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+MAX_TEXT_LENGTH = 3000  # Character limit for the Groq API
+
+def split_text(text: str, max_length: int) -> List[str]:
+    """
+    Splits the text into smaller parts respecting the maximum length.
+
+    Args:
+        text (str): The text to be split.
+        max_length (int): The maximum length of each part.
+
+    Returns:
+        List[str]: A list of text parts.
+    """
+    words = text.split()
+    chunks = []
+    current_chunk = []
+
+    for word in words:
+        # Verify if the next word exceeds the current chunk length
+        if len(' '.join(current_chunk + [word])) <= max_length:
+            current_chunk.append(word)
+        else:
+            # Add the current chunk to the list of chunks and start over
+            chunks.append(' '.join(current_chunk))
+            current_chunk = [word]
+    # Add the last chunk if it's not empty
+    if current_chunk:
+        chunks.append(' '.join(current_chunk))
+    return chunks
 
 @router.post("/analyze/{book_id}")
-async def analyze_book(book_id: int, db: Session = Depends(get_db)) :
-  book = db.query(Book).filter(Book.id == book_id).first()
-  if not book:
-    raise HTTPException(status_code=404, detail="Book not found")
-  
-  if not book.content:
-    raise HTTPException(status_code=400, detail="Book content is empty")
+async def analyze_book(book_id: int, db: Session = Depends(get_db)):
+    """
+    Analyzes the content of a book using the Groq API.
 
-  headers = {
-    "Authorization": f"Bearer {GROQ_API_KEY}",
-    "Content-Type": "application/json",
-  }
-  payload = {
-    "text": book.content,
-    "tasks": ["summarize", "extract_entities", "detect-language", "analyze_sentiment"]
-  }
+    Args:
+        book_id (int): ID of the book in the database.
+        db (Session): Injected database session.
 
-  async with httpx.AsyncClient() as client:
-    response = await client.post(GROQ_API_URL, headers=headers, json=payload)
+    Returns:
+        dict: Result of the book analysis.
+    """
+    try:
+        # Fetch the book from the database
+        book = db.query(Book).filter(Book.id == book_id).first()
+        if not book:
+            raise HTTPException(status_code=404, detail="Book not found")
 
-    if response.status_code != 200:
-      raise HTTPException(status_code=500, detail="Failed to analyze the book content with Groq API")
-    
-    analysis_result = response.json()
+        # Split the book content if it exceeds the maximum length
+        parts = split_text(book.content, MAX_TEXT_LENGTH)
 
-  return {
-    "summary": analysis_result.get("summary", "No summary available"),
-    "key_characters": analysis_result.get("entities", {}).get("characters", []),
-    "language": analysis_result.get("language", "Unknown"),
-    "sentiment": analysis_result.get("sentiment", "Neutral")
-  }
+        # Analyze each part using the Groq API
+        results = [await query_groq([{"role": "user", "content": part}]) for part in parts]
+
+        # Initialize combined results
+        combined_results = {
+            "summary": [],
+            "key_characters": [],
+            "language": "Unknown",
+            "sentiment": "Neutral",
+        }
+
+        # Combine the results
+        for result in results:
+            combined_results["summary"].append(result.get("summary", ""))
+            combined_results["key_characters"].extend(result.get("key_characters", []))
+            combined_results["language"] = result.get("language", "Unknown")
+            if not combined_results["sentiment"]:
+                combined_results["sentiment"] = result.get("sentiment", "Neutral")
+
+        # Return combined results
+        return {
+            "summary": " ".join(combined_results["summary"]),
+            "key_characters": combined_results["key_characters"],
+            "language": combined_results["language"] or "Unknown",
+            "sentiment": combined_results["sentiment"] or "Neutral",
+        }
+
+    except ValueError as e:
+        raise HTTPException(status_code=500, detail=f"Error analyzing the book: {str(e)}")
