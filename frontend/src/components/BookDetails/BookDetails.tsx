@@ -1,46 +1,31 @@
-import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { Card } from "../ui/card";
+import { Button } from "../ui/button";
+import { useBookDetails } from "@/hooks/useBooksDetails";
+import Spinner from "../ui/spinner";
 import AnalysisResult from "../AnalysisResult/AnalysisResult";
 
 
-interface BookDetails {
-  id: number;
-  title: string;
-  author: string;
-  content: string;
-}
-
 export default function BookDetails() {
   const { id } = useParams<{ id: string }>();
-  const [book, setBook] = useState<BookDetails | null>(null);
-  const [ error, setError ] = useState<string | null>(null);
+  const { book, loading, error } = useBookDetails(id || "");
 
-  useEffect(() => {
-    fetch(`http://127.0.0.1:8000/books/${id}`)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Book not found");
-        }
-        return response.json();
-      })
-      .then((data) => setBook(data))
-      .catch((error) => setError(error.message));
-  }, [id]);
-
-  if (error) {
-    return <p className="text-red-500">{error}</p>;
-  }
+  if (loading) return <Spinner />;
+  if (error) return <p className="text-red-500">{error}</p>;
 
   if (!book) {
-    return <div>Loading...</div>;
+    return <p>No book found</p>;
   }
 
   return (
-    <div>
+    <Card className="p-4">
       <h1 className="text-2xl font-bold">{book.title}</h1>
       <h2 className="text-lg text-gray-600">by {book.author}</h2>
       <p className="mt-4">{book.content}</p>
-      <AnalysisResult book_id={book.id} content={book.content || "No content available"} />
-      </div>
+      <AnalysisResult book_id={book.id} content={book.content || ""} />
+      <Button className="mt-4" onClick={() => window.history.back()}>
+        Back to List
+      </Button>
+    </Card>
   );
 }
