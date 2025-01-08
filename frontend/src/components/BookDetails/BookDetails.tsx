@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import AnalysisResult from "./AnalysisResult";
+import AnalysisResult from "../AnalysisResult/AnalysisResult";
+
 
 interface BookDetails {
   id: number;

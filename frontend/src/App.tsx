@@ -1,4 +1,4 @@
-import BookList from "./components/BookList"
+import BookList from "./components/BookList/BookList"
 
 export default function App() {
   return (
