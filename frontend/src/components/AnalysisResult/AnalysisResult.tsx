@@ -1,7 +1,8 @@
 import { Button } from "../ui/button";
-import { Alert } from "../ui/alert";
+import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
+import { AlertCircle } from "lucide-react";
 import { useAnalyzeBook } from "@/hooks/useAnalyzeBook";
-import Spinner from "../ui/spinner";
+import Spinner from "../ui/Spinner";
 
 
 
@@ -18,7 +19,15 @@ export default function AnalysisResult({ book_id }: AnalysisResultProps) {
       <Button onClick={analyze} disabled={loading}>
         {loading ? "Analyzing..." : "Analyze"}
       </Button>
-      {error && <Alert type="error" message={error} />}
+      {error && 
+      <Alert variant="destructive">
+        <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>
+              {error}
+          </AlertDescription>
+      </Alert>
+      }
       {loading && <Spinner />}
       {result && (
         <div className="mt-4">

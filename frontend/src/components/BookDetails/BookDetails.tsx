@@ -1,9 +1,10 @@
 import { useParams } from "react-router-dom";
 import { Card } from "../ui/card";
 import { Button } from "../ui/button";
-import { useBookDetails } from "@/hooks/useBooksDetails";
-import Spinner from "../ui/spinner";
+import Spinner from "../ui/Spinner";
+
 import AnalysisResult from "../AnalysisResult/AnalysisResult";
+import { useBookDetails } from "@/hooks/useBooksDetails";
 
 
 export default function BookDetails() {
