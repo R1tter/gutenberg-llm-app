@@ -3,11 +3,11 @@ import { useSearch } from "@/hooks/useSearch";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Book } from "types/book";
+import { Book } from "@/types/book";
 
 
 interface SearchBarProps {
-  onSearch?: (query: string) => void; // `onSearch` agora é opcional, já que `useSearch` gerencia isso internamente
+  onSearch?: (query: string) => void;
 }
 
 export default function SearchBar({ onSearch }: SearchBarProps) {
@@ -17,12 +17,11 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
   const handleSearch = () => {
     if (!query.trim()) return;
     searchBooks(query.trim());
-    if (onSearch) onSearch(query.trim()); // Opcionalmente notifica o pai
+    if (onSearch) onSearch(query.trim());
   };
 
   return (
     <div className="flex flex-col items-center space-y-4">
-      {/* Input e botão para busca */}
       <div className="flex items-center space-x-2">
         <Input
           type="text"
@@ -36,10 +35,8 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
         </Button>
       </div>
 
-      {/* Mensagem de erro */}
       {error && <p className="text-red-500 text-center">{error}</p>}
 
-      {/* Resultados */}
       <div className="mt-4 grid gap-4">
         {results.length > 0 ? (
           results.map((book: Book) => (

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { AnalysisResult } from "../../types/analysis";
+import { AnalysisResult } from "../types/analysis";
 import { analyzeBook } from "@/services/books";
 
 export function useAnalyzeBook(book_id: number) {

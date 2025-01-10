@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Book } from "../../types/book";
+import { Book } from "../types/book";
 import { fetchBookById, fetchBooksByAuthor } from "@/services/books";
 
 export function useSearch() {

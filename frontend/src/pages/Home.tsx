@@ -3,7 +3,8 @@ import { fetchBooks } from "@/services/books";
 import Header from "@/components/Header/Header";
 import SearchBar from "@/components/SearchBar/SearchBar";
 import BookCard from "@/components/BookCard/BookCard";
-import { Book } from "types/book";
+import { Book } from "@/types/book";
+import Footer from "@/components/Footer/Footer";
 
 
 export default function Home() {
@@ -12,7 +13,6 @@ export default function Home() {
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    // Busca inicial de todos os livros
     fetchBooks()
       .then((data) => {
         setBooks(data);
@@ -33,7 +33,7 @@ export default function Home() {
       setError(null);
     } catch (err: any) {
       setError(err.message);
-      setBooks([]); // Limpa os resultados se houver erro
+      setBooks([]);
     } finally {
       setLoading(false);
     }
@@ -64,6 +64,7 @@ export default function Home() {
           )}
         </div>
       )}
+        <Footer />
     </div>
   );
 }

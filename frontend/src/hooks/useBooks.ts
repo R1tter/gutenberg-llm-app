@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { fetchBooks } from "@/services/books";
-import { Book } from "../../types/book";
+import { Book } from "../types/book";
 
 export function useBooks() {
   const [books, setBooks] = useState<Book[]>([]);

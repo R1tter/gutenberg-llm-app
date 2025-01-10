@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { BookDetails } from "../../types/book";
+import { BookDetails } from "../types/book";
 import { fetchBookById } from "@/services/books";
 
 export function useBookDetails(id: number | string) {
