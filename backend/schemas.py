@@ -1,27 +1,22 @@
 from pydantic import BaseModel
+from typing import Optional
 
 # Books schemas
 
 class BookBase(BaseModel):
-    id: int
     title: str
-    author: str | None = None
+    author: Optional[str] = None
     content: str
-    language: str | None = None
-    year: int | None = None
-    cover_image_url: str | None = None
+    summary: Optional[str] = None
+    language: Optional[str] = None
+    year: Optional[int] = None
+    cover_image_url: Optional[str] = None
 
 class BookCreate(BookBase):
-    content: str
+    pass
 
 class BookResponse(BookBase):
     id: int
-    title: str
-    author: str | None = None
-    content: str
-    language: str | None = None
-    year: int | None = None
-    cover_image_url: str | None = None
 
     class Config:
         orm_mode = True

@@ -1,15 +1,15 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from sqlalchemy import or_
+from typing import List
+
 from db import get_db
 from models import Book
 from schemas import BookResponse
 from services.gutenberg import fetch_book_data
 
-router = APIRouter()
+router = APIRouter(prefix="/api/books")
 
-
-@router.get("/books", response_model=list[BookResponse])
+@router.get("/", response_model=List[BookResponse])
 def get_books(id: int = None, author: str = None, db: Session = Depends(get_db)):
     """
     Fetch books by ID or author. If no parameters are provided, return all books.
@@ -34,8 +34,7 @@ def get_books(id: int = None, author: str = None, db: Session = Depends(get_db))
         raise HTTPException(status_code=404, detail="No books found.")
     return books
 
-
-@router.get("/books/{book_id}", response_model=BookResponse)
+@router.get("/{book_id}", response_model=BookResponse)
 def fetch_book_by_id(book_id: int, db: Session = Depends(get_db)):
     """
     Fetch a specific book by its ID.
@@ -57,9 +56,10 @@ def fetch_book_by_id(book_id: int, db: Session = Depends(get_db)):
         title=book_data["title"],
         author=book_data["author"],
         content=book_data["content"],
-        language=book_data["language"],
-        year=book_data["year"],
-        cover_image_url=book_data["cover_image_url"],
+        summary=book_data.get("summary"),
+        language=book_data.get("language"),
+        year=book_data.get("year"),
+        cover_image_url=book_data.get("cover_image_url")
     )
     db.add(db_book)
     db.commit()
