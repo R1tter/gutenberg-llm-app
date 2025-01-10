@@ -1,33 +1,57 @@
 import { useState } from "react";
+import { useSearch } from "@/hooks/useSearch";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Book } from "types/book";
+
 
 interface SearchBarProps {
-  onSearch: (query: string) => void;
+  onSearch?: (query: string) => void; // `onSearch` agora é opcional, já que `useSearch` gerencia isso internamente
 }
 
 export default function SearchBar({ onSearch }: SearchBarProps) {
   const [query, setQuery] = useState("");
+  const { results, error, loading, searchBooks } = useSearch();
 
   const handleSearch = () => {
-    if (query.trim()) {
-      onSearch(query.trim());
-    }
+    if (!query.trim()) return;
+    searchBooks(query.trim());
+    if (onSearch) onSearch(query.trim()); // Opcionalmente notifica o pai
   };
 
   return (
-    <div className="flex justify-center my-6">
-      <input
-        type="text"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        placeholder="Search by author or book ID"
-        className="border border-gray-300 rounded-lg px-4 py-2 w-80 focus:outline-none focus:ring-2 focus:ring-blue-500"
-      />
-      <button
-        onClick={handleSearch}
-        className="ml-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-      >
-        Search
-      </button>
+    <div className="flex flex-col items-center space-y-4">
+      {/* Input e botão para busca */}
+      <div className="flex items-center space-x-2">
+        <Input
+          type="text"
+          placeholder="Search by ID or Author"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          className="w-72"
+        />
+        <Button onClick={handleSearch} disabled={loading}>
+          {loading ? "Searching..." : "Search"}
+        </Button>
+      </div>
+
+      {/* Mensagem de erro */}
+      {error && <p className="text-red-500 text-center">{error}</p>}
+
+      {/* Resultados */}
+      <div className="mt-4 grid gap-4">
+        {results.length > 0 ? (
+          results.map((book: Book) => (
+            <Card key={book.id} className="p-4">
+              <h2 className="text-lg font-bold">{book.title}</h2>
+              <p className="text-gray-600">by {book.author}</p>
+            </Card>
+          ))
+        ) : (
+          !loading && <p className="text-gray-500 text-center">No results found</p>
+        )}
+      </div>
     </div>
   );
 }
