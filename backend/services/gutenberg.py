@@ -20,6 +20,9 @@ def fetch_book_data(book_id: int) -> dict:
     title = None
     author = None
     summary = "No summary available."
+    language = "Unknown"
+    year = None
+    cover_image_url = None
 
     if about_table:
         rows = about_table.find_all("tr")
@@ -34,8 +37,15 @@ def fetch_book_data(book_id: int) -> dict:
                     title = value_text
                 elif header_text == "Author":
                     author = value_text
-                elif header_text == "Summary":
-                    summary = value_text
+                elif header_text == "Language":
+                    language = value_text
+                elif header_text == "Release Date":
+                    year = int(value_text.split(",")[-1].strip()) if value_text else None
+
+    # Procurar por uma imagem de capa
+    cover_image_tag = soup.find("img", class_="cover")
+    if cover_image_tag:
+        cover_image_url = f"https://www.gutenberg.org{cover_image_tag['src']}"
 
     # URL para conteúdo do livro
     content_url = f"https://www.gutenberg.org/files/{book_id}/{book_id}-0.txt"
@@ -54,4 +64,7 @@ def fetch_book_data(book_id: int) -> dict:
         "title": title or f"Book {book_id}",
         "author": author or "Unknown",
         "content": content,
+        "language": language,
+        "year": year,
+        "cover_image_url": cover_image_url,
     }
