@@ -7,7 +7,7 @@ from models import Book
 from schemas import BookResponse
 from services.gutenberg import fetch_book_data
 
-router = APIRouter(prefix="/api/books")
+router = APIRouter(prefix="/books")
 
 @router.get("/", response_model=List[BookResponse])
 def get_books(id: int = None, author: str = None, db: Session = Depends(get_db)):
@@ -65,3 +65,20 @@ def fetch_book_by_id(book_id: int, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(db_book)
     return db_book
+
+@router.post("/{book_id}/favorite")
+def toggle_favorite(book_id: int, db: Session = Depends(get_db)):
+    book = db.query(Book).filter(Book.id == book_id).first()
+    if not book:
+        raise HTTPException(status_code=404, detail="Book not found")
+
+    book.is_favorite = not book.is_favorite
+    db.commit()
+    db.refresh(book)
+    return {"id": book.id, "is_favorite": book.is_favorite}
+
+# Search route for favorite books
+@router.get("/favorites", response_model=List[BookResponse])
+def get_favorites(db: Session = Depends(get_db)):
+    books = db.query(Book).filter(Book.is_favorite == True).all()
+    return books
