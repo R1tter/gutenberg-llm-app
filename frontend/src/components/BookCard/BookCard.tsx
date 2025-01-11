@@ -1,5 +1,9 @@
-import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { toggleFavorite } from "@/services/books";
+import { Star } from "lucide-react";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 interface BookCardProps {
   id: number;
@@ -7,22 +11,63 @@ interface BookCardProps {
   author: string;
   year?: number;
   coverImageUrl?: string;
+  isFavorite?: boolean;
+  onFavoriteToggle?: () => void;
 }
 
-export default function BookCard({ id, title, author, year, coverImageUrl }: BookCardProps) {
+export default function BookCard({
+  id,
+  title,
+  author,
+  year,
+  coverImageUrl,
+  isFavorite = false,
+  onFavoriteToggle,
+}: BookCardProps) {
   const navigate = useNavigate();
+  const [favorite, setFavorite] = useState(isFavorite);
 
   const handleCardClick = () => {
     navigate(`/books/${id}`);
   };
+
+  const handleFavoriteClick = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const updated = await toggleFavorite(id);
+    setFavorite(updated.is_favorite);
+    if (onFavoriteToggle) {
+      onFavoriteToggle();
+    }
+  };
+
   return (
-    <Card className="p-4" onClick={handleCardClick}>
+    <Card
+      className="cursor-pointer hover:shadow-md transition relative"
+      onClick={handleCardClick}
+    >
       {coverImageUrl && (
-        <img src={coverImageUrl} alt={title} className="w-full h-32 object-cover mb-4" />
+        <img
+          src={coverImageUrl}
+          alt={title}
+          className="w-full h-32 object-cover rounded-t-md"
+        />
       )}
-      <h2 className="text-lg font-bold">{title}</h2>
-      <p className="text-gray-600">by {author}</p>
-      {year && <p className="text-gray-500 text-sm">Published: {year}</p>}
+      <CardHeader>
+        <CardTitle className="text-lg font-bold">{title}</CardTitle>
+        <p className="text-sm text-muted-foreground">by {author}</p>
+      </CardHeader>
+      <CardContent>
+        {year && <p className="text-sm text-muted-foreground">Published: {year}</p>}
+      </CardContent>
+      <CardFooter className="flex justify-between">
+        <Button
+          variant="ghost"
+          className="absolute top-2 right-2 p-1"
+          onClick={handleFavoriteClick}
+        >
+          <Star className={`w-5 h-5 ${favorite ? "text-yellow-500" : "text-gray-400"}`} />
+        </Button>
+      </CardFooter>
     </Card>
   );
 }

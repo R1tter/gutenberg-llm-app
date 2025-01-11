@@ -41,3 +41,15 @@ export async function analyzeBook(book_id: number): Promise<any> {
   const response = await axios.post(`${API_BASE_URL}/analyze/${book_id}`);
   return response.data;
 }
+
+// Toggle favorite status
+export async function toggleFavorite(bookId: number): Promise<{ id: number; is_favorite: boolean }> {
+  const response = await axios.post(`${API_BASE_URL}/${bookId}/favorite`);
+  return response.data;
+}
+
+// Fetch favorite books
+export async function fetchFavorites(): Promise<Book[]> {
+  const response = await axios.get(`${API_BASE_URL}/favorites`);
+  return response.data;
+}
