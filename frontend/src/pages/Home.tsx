@@ -5,7 +5,7 @@ import SearchBar from "@/components/SearchBar/SearchBar";
 import BookCard from "@/components/BookCard/BookCard";
 import { Book } from "@/types/book";
 import Footer from "@/components/Footer/Footer";
-
+import Spinner from "@/components/ui/Spinner";
 
 export default function Home() {
   const [books, setBooks] = useState<Book[]>([]);
@@ -45,26 +45,24 @@ export default function Home() {
       <SearchBar onSearch={handleSearch} />
       {error && <p className="text-red-500 text-center mt-4">{error}</p>}
       {loading ? (
-        <p className="text-center mt-4">Loading...</p>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
-          {books.length > 0 ? (
-            books.map((book) => (
-              <BookCard
-                key={book.id}
-                id={book.id}
-                title={book.title}
-                author={book.author}
-              />
-            ))
-          ) : (
-            <p className="text-gray-500 text-center col-span-full">
-              No books found.
-            </p>
-          )}
+        <Spinner />
+      ) : books.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+          {books.map((book) => (
+            <BookCard
+              key={book.id}
+              id={book.id}
+              title={book.title}
+              author={book.author}
+            />
+          ))}
         </div>
+      ) : (
+        <p className="text-gray-500 text-center col-span-full mt-6">
+          No books found.
+        </p>
       )}
-        <Footer />
+      <Footer />
     </div>
   );
 }

@@ -40,8 +40,9 @@ export default function BookDetails() {
           <CardContent className="space-y-4 p-6">
             <img
               src={book.coverImageUrl || "/src/assets/bookPlaceholder.png"}
-              alt={book.title}
+              alt={book.title || "Book Cover"}
               className="w-full h-64 object-contain rounded-md shadow-sm"
+              onError={(e) => (e.currentTarget.src = "/src/assets/bookPlaceholder.png")}
             />
             <p className="text-gray-700">{book.summary || "No summary available."}</p>
           </CardContent>

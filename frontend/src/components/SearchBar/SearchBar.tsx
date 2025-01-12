@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Book } from "@/types/book";
 
-
 interface SearchBarProps {
   onSearch?: (query: string) => void;
 }
@@ -15,13 +14,14 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
   const { results, error, loading, searchBooks } = useSearch();
 
   const handleSearch = () => {
-    if (!query.trim()) return;
+    if (!query.trim()) return; // Prevent empty searches
     searchBooks(query.trim());
     if (onSearch) onSearch(query.trim());
   };
 
   return (
     <div className="flex flex-col items-center space-y-4">
+      {/* Input and Search Button */}
       <div className="flex items-center space-x-2">
         <Input
           type="text"
@@ -35,10 +35,12 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
         </Button>
       </div>
 
+      {/* Error message */}
       {error && <p className="text-red-500 text-center">{error}</p>}
 
+      {/* Results or "No results found" message */}
       <div className="mt-4 grid gap-4">
-        {results.length > 0 ? (
+        {loading ? null : results.length > 0 ? (
           results.map((book: Book) => (
             <Card key={book.id} className="p-4">
               <h2 className="text-lg font-bold">{book.title}</h2>
@@ -46,7 +48,7 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
             </Card>
           ))
         ) : (
-          !loading && <p className="text-gray-500 text-center">No results found</p>
+          <p className="text-gray-100 text-center">...</p>
         )}
       </div>
     </div>
