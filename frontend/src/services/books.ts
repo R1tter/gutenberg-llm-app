@@ -3,6 +3,10 @@ import axios from "axios";
 
 const API_BASE_URL = "http://127.0.0.1:8000/api";
 
+interface AnalysisResponse {
+  analysis: string;
+}
+
 // Fetch all books or search by query (ID or author)
 export async function fetchBooks(query?: string): Promise<Book[]> {
   try {
@@ -17,39 +21,69 @@ export async function fetchBooks(query?: string): Promise<Book[]> {
       const response = await axios.get(`${API_BASE_URL}/books`);
       return response.data;
     }
-  } catch (error) {
+  } catch (error: any) {
+    console.error("Failed to fetch books:", error.response?.status, error.message);
     throw new Error("Failed to fetch books");
   }
 }
 
-// Fetch book by ID (returns a single book)
+// Fetch book by ID
 export async function fetchBookById(id: number | string): Promise<Book> {
-  const response = await axios.get(`${API_BASE_URL}/books/${id}`);
-  return response.data;
+  try {
+    const response = await axios.get(`${API_BASE_URL}/books/${id}`);
+    return response.data;
+  } catch (error: any) {
+    console.error(`Failed to fetch book by ID ${id}:`, error.response?.status, error.message);
+    throw new Error("Failed to fetch book by ID");
+  }
 }
 
-// Fetch books by author (returns an array of books)
+// Fetch books by author
 export async function fetchBooksByAuthor(author: string): Promise<Book[]> {
-  const response = await axios.get(`${API_BASE_URL}/books`, {
-    params: { author },
-  });
-  return response.data;
+  try {
+    const response = await axios.get(`${API_BASE_URL}/books`, {
+      params: { author },
+    });
+    return response.data;
+  } catch (error: any) {
+    console.error(`Failed to fetch books by author "${author}":`, error.response?.status, error.message);
+    throw new Error("Failed to fetch books by author");
+  }
 }
 
 // Analyze book
-export async function analyzeBook(book_id: number): Promise<any> {
-  const response = await axios.post(`${API_BASE_URL}/analyze/${book_id}`);
-  return response.data;
+export async function analyzeBook(book_id: number): Promise<AnalysisResponse> {
+  try {
+    const response = await axios.post<AnalysisResponse>(
+      `${API_BASE_URL}/analyze/${book_id}`,
+      null,
+      { headers: { "Content-Type": "application/json" } }
+    );
+    return response.data;
+  } catch (error: any) {
+    console.error(`Failed to analyze book with ID ${book_id}:`, error.response?.status, error.message);
+    throw new Error(error.response?.data?.detail || "Failed to analyze book");
+  }
 }
 
-// Toggle favorite status
+// Toggle favorite
 export async function toggleFavorite(bookId: number): Promise<{ id: number; is_favorite: boolean }> {
-  const response = await axios.post(`${API_BASE_URL}/${bookId}/favorite`);
-  return response.data;
+  try {
+    const response = await axios.post(`${API_BASE_URL}/${bookId}/favorite`);
+    return response.data;
+  } catch (error: any) {
+    console.error(`Failed to toggle favorite for book ID ${bookId}:`, error.response?.status, error.message);
+    throw new Error("Failed to toggle favorite");
+  }
 }
 
 // Fetch favorite books
 export async function fetchFavorites(): Promise<Book[]> {
-  const response = await axios.get(`${API_BASE_URL}/favorites`);
-  return response.data;
+  try {
+    const response = await axios.get(`${API_BASE_URL}/favorites`);
+    return response.data;
+  } catch (error: any) {
+    console.error("Failed to fetch favorite books:", error.response?.status, error.message);
+    throw new Error("Failed to fetch favorite books");
+  }
 }

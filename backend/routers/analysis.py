@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from db import get_db
 from models import Book
-from services.groq import query_groq  # Updated to use the official Groq client
+from services.groq import query_groq
 from typing import List
 
 router = APIRouter()

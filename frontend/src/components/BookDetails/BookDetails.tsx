@@ -49,7 +49,7 @@ export default function BookDetails() {
             <Button variant="outline" onClick={() => navigate("/")}>
               Back to Home
             </Button>
-            <Button onClick={() => alert("Feature Coming Soon!")}>Analyze</Button>
+            <Button onClick={() => navigate(`/analyze/${id}`)}>Analyze</Button>
           </div>
         </Card>
       </div>
