@@ -4,4 +4,5 @@ export interface AnalysisResult {
   key_characters: string[];
   language: string;
   sentiment: string;
+  analysis: string;
 }

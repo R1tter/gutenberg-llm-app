@@ -57,7 +57,7 @@ export default function BookCard({
           alt={title}
           className="w-full h-32 object-cover rounded-t-md"
           onError={(e) =>
-            (e.currentTarget.src = "/src/assets/bookPlaceholder2.png")
+            (e.currentTarget.src = "/src/assets/bookPlaceholder.png")
           }
         />
       ) : (

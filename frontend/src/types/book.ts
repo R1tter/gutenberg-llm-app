@@ -7,6 +7,7 @@ export interface Book {
   coverImageUrl?: string;
   language?: string;
   summary?: string;
+  content?: string;
 }
 
 // Represents a book with additional details
