@@ -57,11 +57,13 @@ export async function analyzeBook(book_id: number): Promise<AnalysisResponse> {
     const response = await axios.post<AnalysisResponse>(
       `${API_BASE_URL}/analyze/${book_id}`,
       null,
-      { headers: { "Content-Type": "application/json" } }
+      {
+        headers: { "Content-Type": "application/json" },
+      }
     );
     return response.data;
   } catch (error: any) {
-    console.error(`Failed to analyze book with ID ${book_id}:`, error.response?.status, error.message);
+    console.error(`Failed to analyze book with ID ${book_id}`, error);
     throw new Error(error.response?.data?.detail || "Failed to analyze book");
   }
 }
