@@ -2,10 +2,10 @@ import { Book } from "@/types/book";
 import axios from "axios";
 
 // Use environment variable for the API base URL
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 if (!API_BASE_URL) {
-  throw new Error("VITE_API_BASE_URL is not defined in the environment variables");
+  throw new Error("VITE_BACKEND_URL is not defined in the environment variables");
 }
 
 interface AnalysisResponse {
