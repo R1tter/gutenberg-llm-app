@@ -32,6 +32,7 @@ export default function BookCard({
 }: BookCardProps) {
   const navigate = useNavigate();
   const [favorite, setFavorite] = useState(isFavorite);
+  const [imageError, setImageError] = useState(false);
 
   const handleCardClick = () => {
     navigate(`/books/${id}`);
@@ -51,22 +52,16 @@ export default function BookCard({
       className="cursor-pointer hover:shadow-md transition relative"
       onClick={handleCardClick}
     >
-      {coverImageUrl ? (
-        <img
-          src={coverImageUrl}
-          alt={title}
-          className="w-full h-32 object-cover rounded-t-md"
-          onError={(e) =>
-            (e.currentTarget.src = "/src/assets/bookPlaceholder.png")
-          }
-        />
-      ) : (
-        <img
-          src="/src/assets/bookPlaceholder2.png"
-          alt="Book Placeholder"
-          className="w-full h-32 object-cover rounded-t-md"
-        />
-      )}
+      <img
+        src={
+          imageError || !coverImageUrl
+            ? "/src/assets/bookPlaceholder.png"
+            : coverImageUrl
+        }
+        alt={title}
+        className="w-full h-32 object-cover rounded-t-md"
+        onError={() => setImageError(true)}
+      />
 
       <CardHeader>
         <CardTitle className="text-lg font-bold">{title}</CardTitle>
