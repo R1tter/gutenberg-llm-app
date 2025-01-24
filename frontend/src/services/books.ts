@@ -1,7 +1,12 @@
 import { Book } from "@/types/book";
 import axios from "axios";
 
-const API_BASE_URL = "http://127.0.0.1:8000/api";
+// Use environment variable for the API base URL
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+if (!API_BASE_URL) {
+  throw new Error("VITE_API_BASE_URL is not defined in the environment variables");
+}
 
 interface AnalysisResponse {
   analysis: string;
