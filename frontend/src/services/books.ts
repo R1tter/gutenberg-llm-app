@@ -20,7 +20,7 @@ export async function fetchBooks(query?: string): Promise<Book[]> {
         const book = await fetchBookById(query);
         return [book];
       } else {
-        return await fetchBooksByAuthor(query);
+        return await searchBooksByTextQuery(query);
       }
     } else {
       const response = await axios.get(`${API_BASE_URL}/books`);
@@ -43,16 +43,16 @@ export async function fetchBookById(id: number | string): Promise<Book> {
   }
 }
 
-// Fetch books by author
-export async function fetchBooksByAuthor(author: string): Promise<Book[]> {
+// Fetch books by text query (title or author)
+export async function searchBooksByTextQuery(textQuery: string): Promise<Book[]> {
   try {
     const response = await axios.get(`${API_BASE_URL}/books`, {
-      params: { author },
+      params: { search: textQuery },
     });
     return response.data;
   } catch (error: any) {
-    console.error(`Failed to fetch books by author "${author}":`, error.response?.status, error.message);
-    throw new Error("Failed to fetch books by author");
+    console.error(`Failed to fetch books by text query "${textQuery}":`, error.response?.status, error.message);
+    throw new Error("Failed to fetch books by text query");
   }
 }
 

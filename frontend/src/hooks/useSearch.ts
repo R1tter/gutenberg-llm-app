@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Book } from "../types/book";
-import { fetchBookById, fetchBooksByAuthor } from "@/services/books";
+import { fetchBookById, searchBooksByTextQuery } from "@/services/books";
 
 export function useSearch() {
   const [results, setResults] = useState<Book[]>([]);
@@ -19,7 +19,7 @@ export function useSearch() {
         setResults([book]);
       } else {
         // Search by author
-        const books = await fetchBooksByAuthor(query);
+        const books = await searchBooksByTextQuery(query);
         setResults(books);
       }
     } catch (err) {

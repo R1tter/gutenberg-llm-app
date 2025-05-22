@@ -10,9 +10,9 @@ from services.gutenberg import fetch_book_data
 router = APIRouter(prefix="/books")
 
 @router.get("/", response_model=List[BookResponse])
-def get_books(id: int = None, author: str = None, db: Session = Depends(get_db)):
+def get_books(id: int = None, search: str = None, db: Session = Depends(get_db)):
     """
-    Fetch books by ID or author. If no parameters are provided, return all books.
+    Fetch books by ID or search query (title/author). If no parameters are provided, return all books.
     """
     if id:  # Search by ID
         book = db.query(Book).filter(Book.id == id).first()
@@ -20,12 +20,14 @@ def get_books(id: int = None, author: str = None, db: Session = Depends(get_db))
             raise HTTPException(status_code=404, detail="No book found with the given ID.")
         return [book]  # Return as a list to maintain consistency
     
-    if author:  # Search by author
-        search_terms = author.split()
-        filters = [Book.author.ilike(f"%{term}%") for term in search_terms]
-        books = db.query(Book).filter(or_(*filters)).all()
+    if search:  # Search by title or author
+        search_terms = search.split()
+        title_filters = [Book.title.ilike(f"%{term}%") for term in search_terms]
+        author_filters = [Book.author.ilike(f"%{term}%") for term in search_terms]
+        combined_filters = title_filters + author_filters
+        books = db.query(Book).filter(or_(*combined_filters)).all()
         if not books:
-            raise HTTPException(status_code=404, detail="No books found for the given author.")
+            raise HTTPException(status_code=404, detail="No books found matching the search query.")
         return books
 
     # Return all books if no filters are provided
