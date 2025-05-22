@@ -25,7 +25,7 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
       <div className="flex items-center space-x-2">
         <Input
           type="text"
-          placeholder="Search by ID or Author"
+          placeholder="Search by Title, Author, or ID"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           className="w-72"
