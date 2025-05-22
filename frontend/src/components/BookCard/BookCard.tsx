@@ -1,3 +1,4 @@
+import bookPlaceholder from '../../assets/bookPlaceholder.png';
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { toggleFavorite } from "@/services/books";
@@ -55,7 +56,7 @@ export default function BookCard({
       <img
         src={
           imageError || !coverImageUrl
-            ? "/src/assets/bookPlaceholder.png"
+            ? bookPlaceholder
             : coverImageUrl
         }
         alt={title}
